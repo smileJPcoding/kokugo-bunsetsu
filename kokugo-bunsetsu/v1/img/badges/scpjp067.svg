@@ -1,0 +1,9 @@
+<svg viewBox="0 0 300 300" xmlns="http://www.w3.org/2000/svg">
+<circle cx="150" cy="150" r="140" fill="#f3eaff"/>
+<path d="M150 150 m-100 0 a100 100 0 1 1 200 0 a100 100 0 1 1 -200 0" fill="none" stroke="#c9a8ff" stroke-width="3" stroke-dasharray="6 8"/>
+<text x="108" y="175" font-size="90" font-weight="700" fill="#8b5cf6" transform="rotate(-8 108 175)">6</text>
+<text x="175" y="185" font-size="90" font-weight="700" fill="#8b5cf6" transform="rotate(8 175 185)">7</text>
+<circle cx="90" cy="90" r="6" fill="#c9a8ff"/>
+<circle cx="215" cy="80" r="5" fill="#c9a8ff"/>
+<circle cx="230" cy="200" r="6" fill="#c9a8ff"/>
+</svg>

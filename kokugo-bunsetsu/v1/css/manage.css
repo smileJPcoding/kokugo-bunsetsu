@@ -1,0 +1,131 @@
+.manage-screen {
+  padding: 24px 20px;
+  max-width: 900px;
+  margin: 0 auto;
+}
+
+.manage-screen h1 {
+  margin-bottom: 20px;
+}
+
+.manage-section {
+  background: var(--surface);
+  border-radius: 16px;
+  box-shadow: var(--shadow);
+  padding: 16px 20px;
+  margin-bottom: 20px;
+}
+
+.manage-section h2 {
+  font-size: 1rem;
+  margin-bottom: 12px;
+  color: var(--text-muted);
+}
+
+.manage-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 16px;
+}
+
+.manage-row label {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  font-size: 0.85rem;
+  color: var(--text-muted);
+}
+
+.manage-row input {
+  font-size: 1rem;
+  padding: 6px 8px;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  width: 140px;
+}
+
+.manage-hint {
+  margin-top: 10px;
+  font-size: 0.8rem;
+  color: var(--text-muted);
+}
+
+.manage-table-wrap {
+  overflow-x: auto;
+}
+
+.manage-table {
+  border-collapse: collapse;
+  width: 100%;
+  font-size: 0.85rem;
+}
+
+.manage-table th,
+.manage-table td {
+  border: 1px solid var(--border);
+  padding: 6px 8px;
+  text-align: center;
+  white-space: nowrap;
+}
+
+.manage-table input[type="number"] {
+  width: 80px;
+  padding: 4px;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+}
+
+.manage-table select {
+  padding: 4px;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+}
+
+.mini-btn {
+  font-size: 0.75rem;
+  padding: 4px 8px;
+  border-radius: 999px;
+  background: var(--bg);
+  border: 1px solid var(--border);
+  color: var(--text);
+}
+
+.manage-badge-list {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+  gap: 10px;
+}
+
+.manage-badge-check {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 0.85rem;
+}
+
+.manage-actions {
+  display: flex;
+  gap: 12px;
+  margin-top: 8px;
+}
+
+.manage-actions button {
+  padding: 10px 24px;
+  border-radius: 999px;
+  font-size: 1rem;
+  font-weight: bold;
+  background: var(--color-subject);
+  color: white;
+  box-shadow: var(--shadow);
+}
+
+.manage-actions button.danger {
+  background: var(--color-predicate);
+}
+
+.manage-saved-note {
+  margin-top: 10px;
+  color: var(--color-modifier);
+  font-weight: bold;
+  min-height: 1.2em;
+}

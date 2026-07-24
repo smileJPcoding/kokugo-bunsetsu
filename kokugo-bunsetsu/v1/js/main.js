@@ -2,6 +2,7 @@ import { levels } from "./data/levels.js";
 import { questions } from "./data/questions.js";
 import { loadProgress } from "./state.js";
 import { renderLevelSelect } from "./levelSelect.js";
+import { renderCollection } from "./collectionScreen.js";
 import { startLevel } from "./game.js";
 
 const QUESTIONS_PER_PLAY = 10;
@@ -29,6 +30,14 @@ function showLevelSelect() {
     levelDefs: levels,
     progress,
     onSelectLevel: (level) => showGame(level),
+    onOpenCollection: showCollection,
+  });
+}
+
+function showCollection() {
+  renderCollection(app, {
+    progress,
+    onBack: showLevelSelect,
   });
 }
 

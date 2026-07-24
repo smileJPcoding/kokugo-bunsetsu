@@ -3,6 +3,82 @@
   margin-bottom: 8px;
 }
 
+.brand-logo {
+  width: 56px;
+  height: 56px;
+  display: block;
+  margin: 0 auto 8px;
+}
+
+.brand-tagline {
+  font-size: 0.8rem;
+  color: var(--text-muted);
+  letter-spacing: 0.05em;
+  margin-top: 4px;
+}
+
+.site-license {
+  margin-top: 24px;
+  font-size: 0.7rem;
+  color: var(--text-muted);
+  text-align: center;
+  line-height: 1.5;
+}
+
+.site-license a {
+  color: var(--text-muted);
+}
+
+.rank-badge {
+  align-self: center;
+  font-family: "Courier New", monospace;
+  font-size: 0.8rem;
+  letter-spacing: 0.05em;
+  color: var(--text-muted);
+  border: 1px solid var(--border);
+  border-radius: 999px;
+  padding: 4px 14px;
+  margin-bottom: 12px;
+}
+
+.rp-display {
+  text-align: center;
+  background: var(--surface);
+  border-radius: 16px;
+  box-shadow: var(--shadow);
+  padding: 16px;
+  margin-bottom: 20px;
+}
+
+.rp-label {
+  font-size: 0.85rem;
+  color: var(--text-muted);
+}
+
+.rp-value {
+  font-size: 2.6rem;
+  font-weight: bold;
+  font-variant-numeric: tabular-nums;
+  color: var(--color-conjunction);
+  line-height: 1.2;
+}
+
+.rp-sub {
+  font-size: 0.75rem;
+  color: var(--text-muted);
+}
+
+.collection-link {
+  display: block;
+  margin: 0 auto 24px;
+  background: var(--surface);
+  color: var(--text);
+  border: 1px solid var(--border);
+  border-radius: 999px;
+  padding: 8px 20px;
+  font-size: 0.9rem;
+}
+
 .level-select-total {
   text-align: center;
   font-size: 1.1rem;
@@ -22,7 +98,7 @@
 
 .level-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+  grid-template-columns: repeat(4, 1fr);
   gap: 16px;
 }
 

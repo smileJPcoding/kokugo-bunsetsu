@@ -1,4 +1,4 @@
-import { labelKey } from "./labels.js";
+import { labelKey, LABEL_ICON } from "./labels.js";
 import { addCorrect, recordMiss, recordQuestionSeen, recordLevelResult } from "./state.js";
 
 const PENALTY_MS = 2000;
@@ -32,16 +32,24 @@ export function startLevel(container, { levelDef, levelDefs, questions, progress
   let currentPhaseIndex = 0;
   let phases = [];
   let locked = false;
+  let readingPhase = false;
+  let readingPauseTimer = null;
+  let readingPauseStart = 0;
   const missedThisAttempt = new Set();
+  const newBadgesThisLevel = [];
   let startTime = performance.now(); // タイムは参考値：解答中は非表示、クリア後にのみ表示する
 
   container.innerHTML = `
     <div class="screen">
       <div class="game-top">
         <button class="game-exit" type="button">← レベル一覧</button>
+        <div class="game-level">レベル ${levelDef.level}</div>
         <div class="game-progress"></div>
       </div>
-      <div class="label-palette"></div>
+      <div class="hunt-row">
+        <div class="hunt-icon-slot"><img class="hunt-icon" alt=""></div>
+        <div class="label-palette"></div>
+      </div>
       <div class="sentence-box"></div>
     </div>
   `;
@@ -50,6 +58,7 @@ export function startLevel(container, { levelDef, levelDefs, questions, progress
   const progressEl = container.querySelector(".game-progress");
   const sentenceBox = container.querySelector(".sentence-box");
   const paletteEl = container.querySelector(".label-palette");
+  const huntIconEl = container.querySelector(".hunt-icon");
 
   exitBtn.addEventListener("click", onExit);
 
@@ -64,7 +73,23 @@ export function startLevel(container, { levelDef, levelDefs, questions, progress
     paletteEl.innerHTML = chips.join("");
   }
 
+  function updateHuntIcon() {
+    const currentPhase = phases[currentPhaseIndex];
+    const iconSrc = currentPhase ? LABEL_ICON[labelKey(currentPhase.label)] : null;
+    if (iconSrc) {
+      huntIconEl.src = iconSrc;
+      huntIconEl.style.visibility = "visible";
+    } else {
+      huntIconEl.style.visibility = "hidden";
+    }
+  }
+
+  function hideHuntIcon() {
+    huntIconEl.style.visibility = "hidden";
+  }
+
   function updateActiveLabel() {
+    // アイコンはReady中の予告表示のみ。解答中は成分が変わるたびに動いて集中を妨げるため更新しない
     paletteEl.querySelectorAll(".label-chip").forEach((chip) => {
       const phaseIdx = Number(chip.dataset.phase);
       const slot = Number(chip.dataset.slot);
@@ -89,6 +114,7 @@ export function startLevel(container, { levelDef, levelDefs, questions, progress
     phases = buildPhases(question);
     progressEl.textContent = `もんだい ${currentQIndex + 1} / ${questions.length}`;
     renderPalette();
+    updateHuntIcon(); // 読んでいる最中（Ready状態）から予告として表示する
 
     const breaks = new Set(question.lineBreakAfter || []);
     let lines = [[]];
@@ -122,7 +148,11 @@ export function startLevel(container, { levelDef, levelDefs, questions, progress
   }
 
   function onPhraseClick(e) {
-    if (locked) return;
+    if (readingPhase) {
+      finishReadingPause(); // 読んでいる最中でも解答を始めたらそこからタイマー開始
+    } else if (locked) {
+      return;
+    }
     const span = e.currentTarget;
     const idx = Number(span.dataset.phraseIndex);
     const question = questions[currentQIndex];
@@ -135,7 +165,8 @@ export function startLevel(container, { levelDef, levelDefs, questions, progress
       span.innerHTML = `${span.textContent}<span class="phrase-tag">${phase.label}</span>`;
       span.replaceWith(span.cloneNode(true)); // drop click listener, keep markup
 
-      addCorrect(progress);
+      const { newlyUnlocked } = addCorrect(progress);
+      newBadgesThisLevel.push(...newlyUnlocked);
       phase.remaining.delete(idx);
 
       if (phase.remaining.size === 0) {
@@ -167,39 +198,75 @@ export function startLevel(container, { levelDef, levelDefs, questions, progress
     }
   }
 
-  function excludeFromTime(callback, pauseMs) {
+  function pauseBetweenQuestions(callback) {
+    // 完成した文以外をタップしたら、待ち時間を待たずすぐ次の問題へ進める
     const pauseStart = performance.now();
-    setTimeout(() => {
+    let done = false;
+
+    function finish() {
+      if (done) return;
+      done = true;
+      clearTimeout(timerId);
+      container.removeEventListener("click", onSkipClick, true);
       startTime += performance.now() - pauseStart; // 停止していた時間は参考タイムに含めない
       callback();
-    }, pauseMs);
-  }
+    }
 
-  function pauseBetweenQuestions(callback) {
-    excludeFromTime(callback, QUESTION_REVIEW_PAUSE_MS);
+    function onSkipClick(e) {
+      if (!sentenceBox.contains(e.target) && !exitBtn.contains(e.target)) {
+        finish();
+      }
+    }
+
+    const timerId = setTimeout(finish, QUESTION_REVIEW_PAUSE_MS);
+    container.addEventListener("click", onSkipClick, true);
   }
 
   function beginReadingPause() {
     // 解答候補は全てグレーのまま、まず文章を読む時間を確保する（この間はタップ無効）
+    readingPhase = true;
     locked = true;
-    excludeFromTime(() => {
-      locked = false;
-      updateActiveLabel();
-    }, READING_PAUSE_MS);
+    readingPauseStart = performance.now();
+    readingPauseTimer = setTimeout(finishReadingPause, READING_PAUSE_MS);
+  }
+
+  function finishReadingPause() {
+    clearTimeout(readingPauseTimer);
+    startTime += performance.now() - readingPauseStart; // 読んでいた時間は参考タイムに含めない
+    readingPhase = false;
+    locked = false;
+    hideHuntIcon();
+    updateActiveLabel();
   }
 
   function finishLevel() {
     const timeMs = performance.now() - startTime;
     const noMiss = missedThisAttempt.size === 0;
-    const { mark, nextUnlocked, consumptionComplete } = recordLevelResult(progress, levelDefs, levelDef.level, {
+    const { mark, nextUnlocked, consumptionComplete, newlyUnlocked } = recordLevelResult(progress, levelDefs, levelDef.level, {
       timeMs,
       noMiss,
     });
+    newBadgesThisLevel.push(...newlyUnlocked);
     const seenCount = progress.levels[levelDef.level].seenQuestionIds.length;
     renderResult({ mark, timeMs, noMiss, nextUnlocked, consumptionComplete, seenCount, poolSize: levelDef.pool.length });
   }
 
   function renderResult({ mark, timeMs, noMiss, nextUnlocked, consumptionComplete, seenCount, poolSize }) {
+    const badgeHtml = newBadgesThisLevel
+      .map(
+        (b) => `
+        <div class="badge-unlock">
+          <img class="badge-unlock-illustration" src="${b.illustration}" alt="${b.name}">
+          <div class="badge-unlock-text">
+            <div class="badge-unlock-label">新規収容</div>
+            <div class="badge-unlock-designation">${b.designation}</div>
+            <div class="badge-unlock-name">${b.name}</div>
+          </div>
+        </div>
+      `,
+      )
+      .join("");
+
     container.innerHTML = `
       <div class="screen result-screen">
         <h2>レベル ${levelDef.level} クリア！</h2>
@@ -209,6 +276,7 @@ export function startLevel(container, { levelDef, levelDefs, questions, progress
         <div class="result-note">けいけんした もんだい ${seenCount} / ${poolSize}</div>
         ${consumptionComplete ? `<div class="result-note">プールぜんもんけいけん！★</div>` : ""}
         ${nextUnlocked ? `<div class="result-note">つぎのレベルが解放されました！</div>` : ""}
+        ${badgeHtml}
         <div class="result-actions">
           ${nextUnlocked ? `<button type="button" class="next-level">つぎのレベルへ</button>` : ""}
           <button type="button" class="secondary back-to-select">レベル一覧へ</button>

@@ -1,6 +1,24 @@
+import { badges } from "./data/badges.js";
+
 const STORAGE_KEY = "kokugo-bunsetsu-progress";
 
 const MARK_RANK = { "〇": 1, "◎": 2, "★": 3 };
+
+const RP_GROWTH_RATE = 1.15; // 研究レベルが1上がるごとの倍率（クッキークリッカー的な増幅曲線）
+
+const RANK_THRESHOLDS = [
+  { min: 7000, title: "O5評議会" },
+  { min: 3000, title: "サイト管理者" },
+  { min: 1000, title: "上級研究員" },
+  { min: 500, title: "研究員" },
+  { min: 100, title: "収容班員" },
+  { min: 0, title: "D級職員" },
+];
+
+export function getRankTitle(totalCorrectCount) {
+  const found = RANK_THRESHOLDS.find((r) => totalCorrectCount >= r.min);
+  return found.title;
+}
 
 function emptyLevelEntry(unlocked) {
   return {
@@ -19,7 +37,14 @@ function defaultProgress(levelDefs) {
   levelDefs.forEach((def, i) => {
     levels[def.level] = emptyLevelEntry(i === 0);
   });
-  return { totalCorrectCount: 0, levels, missedQuestionIds: [] };
+  return {
+    totalCorrectCount: 0,
+    researchLevel: 0,
+    researchPoints: 0,
+    unlockedBadgeIds: [],
+    levels,
+    missedQuestionIds: [],
+  };
 }
 
 export function loadProgress(levelDefs) {
@@ -33,6 +58,9 @@ export function loadProgress(levelDefs) {
   if (!progress.levels) progress.levels = {};
   if (!Array.isArray(progress.missedQuestionIds)) progress.missedQuestionIds = [];
   if (typeof progress.totalCorrectCount !== "number") progress.totalCorrectCount = 0;
+  if (typeof progress.researchLevel !== "number") progress.researchLevel = 0;
+  if (typeof progress.researchPoints !== "number") progress.researchPoints = 0;
+  if (!Array.isArray(progress.unlockedBadgeIds)) progress.unlockedBadgeIds = [];
   levelDefs.forEach((def, i) => {
     if (!progress.levels[def.level]) {
       progress.levels[def.level] = emptyLevelEntry(i === 0);
@@ -48,9 +76,42 @@ export function saveProgress(progress) {
   localStorage.setItem(STORAGE_KEY, JSON.stringify(progress));
 }
 
+export function resetProgress(levelDefs) {
+  const progress = defaultProgress(levelDefs);
+  saveProgress(progress);
+  return progress;
+}
+
+function totalClearCount(progress) {
+  return Object.values(progress.levels).reduce((sum, entry) => sum + (entry.clearCount || 0), 0);
+}
+
+function checkBadgeUnlocks(progress) {
+  const newlyUnlocked = [];
+  for (const badge of badges) {
+    if (progress.unlockedBadgeIds.includes(badge.id)) continue;
+    let shouldUnlock = false;
+    if (badge.secretTrigger?.type === "totalClearCount") {
+      shouldUnlock = totalClearCount(progress) >= badge.secretTrigger.value;
+    } else if (badge.secretTrigger?.type === "totalCorrectCount") {
+      shouldUnlock = progress.totalCorrectCount >= badge.secretTrigger.value;
+    } else if (typeof badge.threshold === "number") {
+      shouldUnlock = progress.researchPoints >= badge.threshold;
+    }
+    if (shouldUnlock) {
+      progress.unlockedBadgeIds.push(badge.id);
+      newlyUnlocked.push(badge);
+    }
+  }
+  return newlyUnlocked;
+}
+
 export function addCorrect(progress) {
   progress.totalCorrectCount += 1;
+  progress.researchPoints += Math.pow(RP_GROWTH_RATE, progress.researchLevel);
+  const newlyUnlocked = checkBadgeUnlocks(progress);
   saveProgress(progress);
+  return { newlyUnlocked };
 }
 
 export function recordMiss(progress, questionId) {
@@ -93,6 +154,7 @@ export function recordLevelResult(progress, levelDefs, level, { timeMs, noMiss }
 
   let nextUnlocked = false;
   if (noMiss) {
+    progress.researchLevel += 1; // 性能アップ＝以降のRP倍率が上がる
     const next = levelDefs[defIndex + 1];
     if (next && !progress.levels[next.level].unlocked) {
       progress.levels[next.level].unlocked = true;
@@ -100,6 +162,8 @@ export function recordLevelResult(progress, levelDefs, level, { timeMs, noMiss }
     }
   }
 
+  const newlyUnlocked = checkBadgeUnlocks(progress);
+
   saveProgress(progress);
-  return { mark, nextUnlocked, consumptionComplete };
+  return { mark, nextUnlocked, consumptionComplete, newlyUnlocked };
 }

@@ -1,3 +1,6 @@
+import { getRankTitle } from "./state.js";
+import { formatBigNumber } from "./format.js";
+
 function formatBestTime(ms) {
   if (ms === null || ms === undefined) return "";
   const minutes = Math.floor(ms / 60000);
@@ -5,16 +8,25 @@ function formatBestTime(ms) {
   return `さんこう ${minutes}:${seconds.padStart(4, "0")}`;
 }
 
-export function renderLevelSelect(container, { levelDefs, progress, onSelectLevel }) {
+export function renderLevelSelect(container, { levelDefs, progress, onSelectLevel, onOpenCollection }) {
   const totalClearCount = levelDefs.reduce(
     (sum, def) => sum + (progress.levels[def.level]?.clearCount || 0),
     0
   );
+  const rankTitle = getRankTitle(progress.totalCorrectCount);
 
   container.innerHTML = `
     <div class="screen">
       <div class="level-select-header">
-        <h1>文の成分トレーニング</h1>
+        <img class="brand-logo" src="img/scp-logo.svg" alt="SCP財団">
+        <h1>SCP財団 入社試験</h1>
+        <div class="brand-tagline">適性検査「文の成分」判定センター</div>
+      </div>
+      <div class="rank-badge">${rankTitle}</div>
+      <div class="rp-display">
+        <div class="rp-label">研究ポイント</div>
+        <div class="rp-value">${formatBigNumber(progress.researchPoints)}</div>
+        <div class="rp-sub">研究レベル ${progress.researchLevel}（×${Math.pow(1.15, progress.researchLevel).toFixed(2)}）</div>
       </div>
       <div class="level-select-total">
         せいかい <strong>${progress.totalCorrectCount}</strong> かい
@@ -22,9 +34,15 @@ export function renderLevelSelect(container, { levelDefs, progress, onSelectLeve
       <div class="level-select-total">
         レベルクリア <strong>${totalClearCount}</strong> かい
       </div>
+      <button type="button" class="collection-link">収容リストを見る</button>
       <div class="level-grid"></div>
+      <div class="site-license">
+        特に指定がない限り、このサイトのすべてのコンテンツは<a href="https://creativecommons.org/licenses/by-sa/3.0/deed.ja" target="_blank" rel="noopener">クリエイティブ・コモンズ 表示 - 継承3.0ライセンス</a>の元で利用可能です。
+      </div>
     </div>
   `;
+
+  container.querySelector(".collection-link").addEventListener("click", onOpenCollection);
 
   const grid = container.querySelector(".level-grid");
 

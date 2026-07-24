@@ -1,0 +1,9 @@
+<svg viewBox="0 0 300 300" xmlns="http://www.w3.org/2000/svg">
+<circle cx="150" cy="150" r="138" fill="none" stroke="#111" stroke-width="14"/>
+<g fill="#111">
+<path d="M150 150 L150 36 Q200 50 196 96 Q192 130 150 150 Z"/>
+<path d="M150 150 L150 36 Q200 50 196 96 Q192 130 150 150 Z" transform="rotate(120 150 150)"/>
+<path d="M150 150 L150 36 Q200 50 196 96 Q192 130 150 150 Z" transform="rotate(240 150 150)"/>
+</g>
+<circle cx="150" cy="150" r="16" fill="#111"/>
+</svg>

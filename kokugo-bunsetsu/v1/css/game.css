@@ -12,22 +12,84 @@
   padding: 6px 10px;
 }
 
+.game-level {
+  font-size: 0.9rem;
+  font-weight: bold;
+  color: var(--text-muted);
+}
+
 .game-progress {
   font-size: 0.9rem;
   color: var(--text-muted);
 }
 
+.hunt-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 20px;
+}
+
+.hunt-icon-slot {
+  width: 48px;
+  height: 48px;
+  flex-shrink: 0;
+  border-radius: 50%;
+  background: var(--surface);
+  box-shadow: var(--shadow);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+}
+
+.hunt-icon {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+}
+
+.hunt-row .label-palette {
+  flex: 1;
+  margin-bottom: 0;
+}
+
 .sentence-box {
+  position: relative;
   background: var(--surface);
   border-radius: 20px;
   box-shadow: var(--shadow);
-  padding: 32px 24px;
-  margin-bottom: 28px;
-  flex: 1;
+  padding: 20px 24px;
+  margin-bottom: 20px;
   display: flex;
   flex-direction: column;
-  justify-content: center;
   gap: 12px;
+}
+
+.sentence-box::before,
+.sentence-box::after {
+  content: "";
+  position: absolute;
+  width: 18px;
+  height: 18px;
+  border-color: var(--border);
+  border-style: solid;
+  border-width: 0;
+  opacity: 0.7;
+}
+
+.sentence-box::before {
+  top: 8px;
+  left: 8px;
+  border-top-width: 3px;
+  border-left-width: 3px;
+}
+
+.sentence-box::after {
+  bottom: 8px;
+  right: 8px;
+  border-bottom-width: 3px;
+  border-right-width: 3px;
 }
 
 .sentence-line {
@@ -35,13 +97,14 @@
   flex-wrap: wrap;
   gap: 4px;
   font-size: 1.8rem;
-  line-height: 2.4;
+  line-height: 2;
   justify-content: center;
 }
 
 .phrase {
   display: inline-block;
   padding: 2px 6px;
+  margin-bottom: 1em;
   border-radius: 8px;
   position: relative;
   transition: background-color 0.15s ease, transform 0.1s ease;
@@ -67,7 +130,11 @@
 }
 
 .phrase-tag {
-  display: block;
+  position: absolute;
+  top: 100%;
+  left: 50%;
+  transform: translateX(-50%);
+  white-space: nowrap;
   font-size: 0.7rem;
   line-height: 1.2;
   font-weight: bold;
@@ -122,8 +189,6 @@
 .label-chip.done {
   opacity: 0.8;
   color: white;
-  font-size: 0.85rem;
-  padding: 8px 14px;
 }
 
 .label-chip.done.subject { background: var(--color-subject); border-color: var(--color-subject); }
@@ -178,4 +243,39 @@
 .result-actions button.secondary {
   background: var(--surface);
   color: var(--text);
+}
+
+.badge-unlock {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  background: #1e1e1e;
+  color: #e8e8e8;
+  border-radius: 12px;
+  padding: 12px 20px;
+  font-family: "Courier New", monospace;
+  text-align: left;
+}
+
+.badge-unlock-illustration {
+  width: 56px;
+  height: 56px;
+  object-fit: contain;
+  flex-shrink: 0;
+}
+
+.badge-unlock-label {
+  font-size: 0.75rem;
+  color: #d99b25;
+  letter-spacing: 0.1em;
+}
+
+.badge-unlock-designation {
+  font-size: 0.9rem;
+  color: #aaa;
+}
+
+.badge-unlock-name {
+  font-size: 1.3rem;
+  font-weight: bold;
 }
