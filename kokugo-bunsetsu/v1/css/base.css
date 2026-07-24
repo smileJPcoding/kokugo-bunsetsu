@@ -1,0 +1,56 @@
+:root {
+  --color-subject: #3b82f6;      /* 主語 */
+  --color-predicate: #ef4444;    /* 述語 */
+  --color-modifier: #10b981;     /* 修飾語 */
+  --color-conjunction: #8b5cf6;  /* 接続語 */
+  --color-independent: #f59e0b;  /* 独立語 */
+
+  --bg: #fafaf8;
+  --surface: #ffffff;
+  --text: #2b2b2b;
+  --text-muted: #8a8a8a;
+  --border: #e2e0da;
+  --shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html, body {
+  margin: 0;
+  padding: 0;
+  height: 100%;
+  background: var(--bg);
+  color: var(--text);
+  font-family: "Hiragino Maru Gothic ProN", "BIZ UDPGothic", "Yu Gothic", "Meiryo", sans-serif;
+  -webkit-tap-highlight-color: transparent;
+  user-select: none;
+}
+
+#app {
+  min-height: 100%;
+  display: flex;
+  flex-direction: column;
+}
+
+button {
+  font-family: inherit;
+  border: none;
+  cursor: pointer;
+  touch-action: manipulation;
+}
+
+h1, h2, h3 {
+  margin: 0;
+}
+
+.screen {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  padding: 24px 20px;
+  max-width: 900px;
+  width: 100%;
+  margin: 0 auto;
+}

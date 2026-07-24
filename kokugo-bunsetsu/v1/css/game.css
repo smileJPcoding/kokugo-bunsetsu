@@ -1,0 +1,181 @@
+.game-top {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 16px;
+}
+
+.game-exit {
+  background: none;
+  color: var(--text-muted);
+  font-size: 0.85rem;
+  padding: 6px 10px;
+}
+
+.game-progress {
+  font-size: 0.9rem;
+  color: var(--text-muted);
+}
+
+.sentence-box {
+  background: var(--surface);
+  border-radius: 20px;
+  box-shadow: var(--shadow);
+  padding: 32px 24px;
+  margin-bottom: 28px;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 12px;
+}
+
+.sentence-line {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+  font-size: 1.8rem;
+  line-height: 2.4;
+  justify-content: center;
+}
+
+.phrase {
+  display: inline-block;
+  padding: 2px 6px;
+  border-radius: 8px;
+  position: relative;
+  transition: background-color 0.15s ease, transform 0.1s ease;
+}
+
+.phrase.tappable {
+  cursor: pointer;
+}
+
+.phrase.tappable:active {
+  transform: scale(0.94);
+}
+
+.phrase.penalty {
+  background-color: rgba(200, 30, 30, 0.18);
+  animation: shake 0.35s ease;
+}
+
+@keyframes shake {
+  0%, 100% { transform: translateX(0); }
+  25% { transform: translateX(-4px); }
+  75% { transform: translateX(4px); }
+}
+
+.phrase-tag {
+  display: block;
+  font-size: 0.7rem;
+  line-height: 1.2;
+  font-weight: bold;
+  opacity: 0.85;
+}
+
+.phrase.answered-subject { background-color: color-mix(in srgb, var(--color-subject) 25%, white); }
+.phrase.answered-predicate { background-color: color-mix(in srgb, var(--color-predicate) 25%, white); }
+.phrase.answered-modifier { background-color: color-mix(in srgb, var(--color-modifier) 25%, white); }
+.phrase.answered-conjunction { background-color: color-mix(in srgb, var(--color-conjunction) 25%, white); }
+.phrase.answered-independent { background-color: color-mix(in srgb, var(--color-independent) 25%, white); }
+
+.label-palette {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  justify-content: center;
+  margin-bottom: 20px;
+}
+
+.label-chip {
+  padding: 10px 18px;
+  border-radius: 999px;
+  font-size: 1rem;
+  font-weight: bold;
+  background: var(--surface);
+  color: var(--text-muted);
+  box-shadow: var(--shadow);
+  border: 3px solid var(--border);
+  opacity: 0.6;
+  transform: scale(1);
+  transition: opacity 0.2s ease, transform 0.2s ease, background-color 0.2s ease, border-color 0.2s ease, color 0.2s ease;
+}
+
+.label-chip.active {
+  opacity: 1;
+  color: white;
+  animation: label-pulse 1s ease-in-out infinite;
+}
+
+.label-chip.active.subject { background: var(--color-subject); border-color: var(--color-subject); }
+.label-chip.active.predicate { background: var(--color-predicate); border-color: var(--color-predicate); }
+.label-chip.active.modifier { background: var(--color-modifier); border-color: var(--color-modifier); }
+.label-chip.active.conjunction { background: var(--color-conjunction); border-color: var(--color-conjunction); }
+.label-chip.active.independent { background: var(--color-independent); border-color: var(--color-independent); }
+
+@keyframes label-pulse {
+  0%, 100% { transform: scale(1.15); }
+  50% { transform: scale(1.25); }
+}
+
+.label-chip.done {
+  opacity: 0.8;
+  color: white;
+  font-size: 0.85rem;
+  padding: 8px 14px;
+}
+
+.label-chip.done.subject { background: var(--color-subject); border-color: var(--color-subject); }
+.label-chip.done.predicate { background: var(--color-predicate); border-color: var(--color-predicate); }
+.label-chip.done.modifier { background: var(--color-modifier); border-color: var(--color-modifier); }
+.label-chip.done.conjunction { background: var(--color-conjunction); border-color: var(--color-conjunction); }
+.label-chip.done.independent { background: var(--color-independent); border-color: var(--color-independent); }
+
+.label-chip.done::after {
+  content: " \2713";
+}
+
+.result-screen {
+  text-align: center;
+  gap: 20px;
+}
+
+.result-mark {
+  font-size: 5rem;
+  line-height: 1;
+}
+
+.result-time {
+  font-size: 1.6rem;
+  font-variant-numeric: tabular-nums;
+}
+
+.result-note {
+  color: var(--text-muted);
+}
+
+.result-actions {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  margin-top: 20px;
+  align-items: center;
+}
+
+.result-actions button {
+  padding: 14px 32px;
+  border-radius: 999px;
+  font-size: 1.1rem;
+  font-weight: bold;
+  background: var(--color-subject);
+  color: white;
+  box-shadow: var(--shadow);
+  width: 100%;
+  max-width: 280px;
+}
+
+.result-actions button.secondary {
+  background: var(--surface);
+  color: var(--text);
+}
