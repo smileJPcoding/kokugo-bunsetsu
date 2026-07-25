@@ -1,5 +1,6 @@
 import { labelKey, LABEL_ICON } from "./labels.js";
 import { addCorrect, recordMiss, recordQuestionSeen, recordLevelResult } from "./state.js";
+import { formatBigNumber } from "./format.js";
 
 const PENALTY_MS = 2000;
 const QUESTION_REVIEW_PAUSE_MS = 2000;
@@ -37,6 +38,7 @@ export function startLevel(container, { levelDef, levelDefs, questions, progress
   let readingPauseStart = 0;
   const missedThisAttempt = new Set();
   const newBadgesThisLevel = [];
+  let pendingRp = 0; // クリアするまでは「確保」中。離脱すると失われる
   let startTime = performance.now(); // タイムは参考値：解答中は非表示、クリア後にのみ表示する
 
   container.innerHTML = `
@@ -44,7 +46,10 @@ export function startLevel(container, { levelDef, levelDefs, questions, progress
       <div class="game-top">
         <button class="game-exit" type="button">← レベル一覧</button>
         <div class="game-level">レベル ${levelDef.level}</div>
-        <div class="game-progress"></div>
+        <div class="game-top-right">
+          <div class="game-progress"></div>
+          <div class="pending-rp-display">確保ポイント：<span class="pending-rp-value">0</span></div>
+        </div>
       </div>
       <div class="hunt-row">
         <div class="hunt-icon-slot"><img class="hunt-icon" alt=""></div>
@@ -59,6 +64,7 @@ export function startLevel(container, { levelDef, levelDefs, questions, progress
   const sentenceBox = container.querySelector(".sentence-box");
   const paletteEl = container.querySelector(".label-palette");
   const huntIconEl = container.querySelector(".hunt-icon");
+  const pendingRpValueEl = container.querySelector(".pending-rp-value");
 
   exitBtn.addEventListener("click", onExit);
 
@@ -86,6 +92,13 @@ export function startLevel(container, { levelDef, levelDefs, questions, progress
 
   function hideHuntIcon() {
     huntIconEl.style.visibility = "hidden";
+  }
+
+  function updatePendingRpDisplay() {
+    pendingRpValueEl.textContent = formatBigNumber(pendingRp);
+    pendingRpValueEl.classList.remove("bump");
+    void pendingRpValueEl.offsetWidth; // reflow so the animation can restart on rapid taps
+    pendingRpValueEl.classList.add("bump");
   }
 
   function updateActiveLabel() {
@@ -165,8 +178,9 @@ export function startLevel(container, { levelDef, levelDefs, questions, progress
       span.innerHTML = `${span.textContent}<span class="phrase-tag">${phase.label}</span>`;
       span.replaceWith(span.cloneNode(true)); // drop click listener, keep markup
 
-      const { newlyUnlocked } = addCorrect(progress);
-      newBadgesThisLevel.push(...newlyUnlocked);
+      const { rpGained } = addCorrect(progress);
+      pendingRp += rpGained;
+      updatePendingRpDisplay();
       phase.remaining.delete(idx);
 
       if (phase.remaining.size === 0) {
@@ -245,6 +259,7 @@ export function startLevel(container, { levelDef, levelDefs, questions, progress
     const { mark, nextUnlocked, consumptionComplete, newlyUnlocked } = recordLevelResult(progress, levelDefs, levelDef.level, {
       timeMs,
       noMiss,
+      pendingRp,
     });
     newBadgesThisLevel.push(...newlyUnlocked);
     const seenCount = progress.levels[levelDef.level].seenQuestionIds.length;
@@ -252,6 +267,7 @@ export function startLevel(container, { levelDef, levelDefs, questions, progress
   }
 
   function renderResult({ mark, timeMs, noMiss, nextUnlocked, consumptionComplete, seenCount, poolSize }) {
+    const rpEarnedText = formatBigNumber(pendingRp);
     const badgeHtml = newBadgesThisLevel
       .map(
         (b) => `
@@ -270,11 +286,12 @@ export function startLevel(container, { levelDef, levelDefs, questions, progress
     container.innerHTML = `
       <div class="screen result-screen">
         <h2>レベル ${levelDef.level} クリア！</h2>
-        <div class="result-mark">${mark}</div>
+        <div class="result-mark${mark === "★" ? " is-star" : ""}">${mark}</div>
         <div class="result-time">タイム（さんこう） ${formatTime(timeMs)}</div>
         <div class="result-note">${noMiss ? "ノーミスクリア！" : "クリア"}</div>
+        <div class="result-note result-rp">${rpEarnedText}ポイント収容しました</div>
         <div class="result-note">けいけんした もんだい ${seenCount} / ${poolSize}</div>
-        ${consumptionComplete ? `<div class="result-note">プールぜんもんけいけん！★</div>` : ""}
+        ${consumptionComplete ? `<div class="result-note">プールぜんもんけいけん！<span class="is-star">★</span></div>` : ""}
         ${nextUnlocked ? `<div class="result-note">つぎのレベルが解放されました！</div>` : ""}
         ${badgeHtml}
         <div class="result-actions">

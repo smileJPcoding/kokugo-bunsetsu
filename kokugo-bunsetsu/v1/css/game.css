@@ -1,7 +1,7 @@
 .game-top {
   display: flex;
   justify-content: space-between;
-  align-items: center;
+  align-items: flex-start;
   margin-bottom: 16px;
 }
 
@@ -9,7 +9,7 @@
   background: none;
   color: var(--text-muted);
   font-size: 0.85rem;
-  padding: 6px 10px;
+  padding: 0;
 }
 
 .game-level {
@@ -18,9 +18,37 @@
   color: var(--text-muted);
 }
 
+.game-top-right {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 6px;
+}
+
 .game-progress {
   font-size: 0.9rem;
   color: var(--text-muted);
+}
+
+.pending-rp-display {
+  text-align: right;
+  font-size: 0.9rem;
+  color: var(--text-muted);
+}
+
+.pending-rp-value {
+  display: inline-block;
+  font-variant-numeric: tabular-nums;
+}
+
+.pending-rp-value.bump {
+  animation: rp-bump 0.3s ease;
+}
+
+@keyframes rp-bump {
+  0% { transform: scale(1); }
+  40% { transform: scale(1.35); }
+  100% { transform: scale(1); }
 }
 
 .hunt-row {
@@ -218,6 +246,12 @@
 
 .result-note {
   color: var(--text-muted);
+}
+
+.result-rp {
+  font-size: 1.2rem;
+  font-weight: bold;
+  color: var(--color-conjunction);
 }
 
 .result-actions {
