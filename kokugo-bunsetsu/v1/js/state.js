@@ -5,7 +5,7 @@ const STORAGE_KEY = "kokugo-bunsetsu-progress";
 const MARK_RANK = { "〇": 1, "◎": 2, "★": 3 };
 
 const RP_GROWTH_RATE = 1.15; // 研究レベルが1上がるごとの倍率（クッキークリッカー的な増幅曲線）
-const STAR_BONUS_PER_LEVEL = 0.1; // ★を取ったレベル1つにつき恒久的にRP倍率+10%
+const STAR_GROWTH_RATE = 1.15; // ★を1個取るごとの倍率。研究レベルの外側で掛かるので、★8個（上限）でも×3.06止まりで暴走しない
 
 const RANK_THRESHOLDS = [
   { min: 7000, title: "O5評議会" },
@@ -92,7 +92,7 @@ export function getStarCount(progress) {
 }
 
 export function getRpMultiplier(progress) {
-  const starBonus = 1 + STAR_BONUS_PER_LEVEL * getStarCount(progress);
+  const starBonus = Math.pow(STAR_GROWTH_RATE, getStarCount(progress));
   return Math.pow(RP_GROWTH_RATE, progress.researchLevel) * starBonus;
 }
 
