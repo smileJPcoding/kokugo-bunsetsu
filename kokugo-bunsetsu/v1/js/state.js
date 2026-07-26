@@ -7,18 +7,34 @@ const MARK_RANK = { "〇": 1, "◎": 2, "★": 3 };
 const RP_GROWTH_RATE = 1.15; // 研究レベルが1上がるごとの倍率（クッキークリッカー的な増幅曲線）
 const STAR_GROWTH_RATE = 1.15; // ★を1個取るごとの倍率。研究レベルの外側で掛かるので、★8個（上限）でも×3.06止まりで暴走しない
 
+// 昇格には正解数だけでなく★の数も必要（周回してレベルを極めないと階級が頭打ちになる）
 const RANK_THRESHOLDS = [
-  { min: 7000, title: "O5評議会" },
-  { min: 3000, title: "サイト管理者" },
-  { min: 1000, title: "上級研究員" },
-  { min: 500, title: "研究員" },
-  { min: 100, title: "収容班員" },
-  { min: 0, title: "D級職員" },
+  { min: 7000, star: 8, title: "O5評議会" },
+  { min: 3000, star: 5, title: "サイト管理者" },
+  { min: 1000, star: 3, title: "上級研究員" },
+  { min: 500, star: 1, title: "研究員" },
+  { min: 100, star: 0, title: "収容班員" },
+  { min: 0, star: 0, title: "D級職員" },
 ];
 
-export function getRankTitle(totalCorrectCount) {
-  const found = RANK_THRESHOLDS.find((r) => totalCorrectCount >= r.min);
+export function getRankTitle(totalCorrectCount, starCount) {
+  const found = RANK_THRESHOLDS.find((r) => totalCorrectCount >= r.min && starCount >= r.star);
   return found.title;
+}
+
+export function getNextRankInfo(totalCorrectCount, starCount) {
+  const ascending = [...RANK_THRESHOLDS].reverse();
+  let currentIdx = 0;
+  ascending.forEach((r, i) => {
+    if (totalCorrectCount >= r.min && starCount >= r.star) currentIdx = i;
+  });
+  const next = ascending[currentIdx + 1];
+  if (!next) return null;
+  return {
+    title: next.title,
+    correctRemaining: Math.max(0, next.min - totalCorrectCount),
+    starRemaining: Math.max(0, next.star - starCount),
+  };
 }
 
 function emptyLevelEntry(unlocked) {

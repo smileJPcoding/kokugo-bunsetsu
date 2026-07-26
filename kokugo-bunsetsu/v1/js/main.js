@@ -51,6 +51,7 @@ function showGame(level) {
     onExit: showLevelSelect,
     onGoToLevelSelect: showLevelSelect,
     onNextLevel: () => showGame(level + 1),
+    onRetry: () => showGame(level),
   });
 }
 

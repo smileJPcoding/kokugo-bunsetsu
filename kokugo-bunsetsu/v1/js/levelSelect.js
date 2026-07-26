@@ -1,4 +1,4 @@
-import { getRankTitle, getRpMultiplier, getStarCount } from "./state.js";
+import { getRankTitle, getNextRankInfo, getRpMultiplier, getStarCount } from "./state.js";
 import { formatBigNumber } from "./format.js";
 
 function formatBestTime(ms) {
@@ -13,8 +13,9 @@ export function renderLevelSelect(container, { levelDefs, progress, onSelectLeve
     (sum, def) => sum + (progress.levels[def.level]?.clearCount || 0),
     0
   );
-  const rankTitle = getRankTitle(progress.totalCorrectCount);
   const starCount = getStarCount(progress);
+  const rankTitle = getRankTitle(progress.totalCorrectCount, starCount);
+  const nextRank = getNextRankInfo(progress.totalCorrectCount, starCount);
   const rpMultiplier = getRpMultiplier(progress);
 
   container.innerHTML = `
@@ -27,6 +28,16 @@ export function renderLevelSelect(container, { levelDefs, progress, onSelectLeve
         <div class="hazard-stripe"></div>
       </div>
       <div class="rank-badge">${rankTitle}</div>
+      <div class="next-rank-info">${
+        nextRank
+          ? `つぎの階級「${nextRank.title}」まで：${[
+              nextRank.correctRemaining > 0 ? `せいかい あと${nextRank.correctRemaining}かい` : null,
+              nextRank.starRemaining > 0 ? `<span class="is-star">★</span>あと${nextRank.starRemaining}個` : null,
+            ]
+              .filter(Boolean)
+              .join("　")}`
+          : "さいこう階級に到達！"
+      }</div>
       <div class="rp-display">
         <div class="rp-label">研究ポイント</div>
         <div class="rp-value">${formatBigNumber(progress.researchPoints)}</div>

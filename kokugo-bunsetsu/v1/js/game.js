@@ -28,7 +28,7 @@ function buildPhases(question) {
   return phases;
 }
 
-export function startLevel(container, { levelDef, levelDefs, questions, progress, onExit, onGoToLevelSelect, onNextLevel }) {
+export function startLevel(container, { levelDef, levelDefs, questions, progress, onExit, onGoToLevelSelect, onNextLevel, onRetry }) {
   let currentQIndex = 0;
   let currentPhaseIndex = 0;
   let phases = [];
@@ -291,11 +291,16 @@ export function startLevel(container, { levelDef, levelDefs, questions, progress
         <div class="result-note">${noMiss ? "ノーミスクリア！" : "クリア"}</div>
         <div class="result-note result-rp">${rpEarnedText}ポイント収容しました</div>
         <div class="result-note">けいけんした もんだい ${seenCount} / ${poolSize}</div>
-        ${consumptionComplete ? `<div class="result-note">プールぜんもんけいけん！<span class="is-star">★</span></div>` : ""}
+        ${
+          consumptionComplete
+            ? `<div class="result-note">プールぜんもんけいけん！<span class="is-star">★</span></div>`
+            : `<div class="result-note result-star-progress">★まで あと <strong>${poolSize - seenCount}</strong>問</div>`
+        }
         ${nextUnlocked ? `<div class="result-note">つぎのレベルが解放されました！</div>` : ""}
         ${badgeHtml}
         <div class="result-actions">
-          ${nextUnlocked ? `<button type="button" class="next-level">つぎのレベルへ</button>` : ""}
+          <button type="button" class="retry-level">この面をもう一周する</button>
+          ${nextUnlocked ? `<button type="button" class="secondary next-level">つぎのレベルへ</button>` : ""}
           <button type="button" class="secondary back-to-select">レベル一覧へ</button>
         </div>
       </div>
@@ -304,6 +309,8 @@ export function startLevel(container, { levelDef, levelDefs, questions, progress
     backBtn.addEventListener("click", onGoToLevelSelect);
     const nextBtn = container.querySelector(".next-level");
     if (nextBtn) nextBtn.addEventListener("click", onNextLevel);
+    const retryBtn = container.querySelector(".retry-level");
+    retryBtn.addEventListener("click", onRetry);
   }
 
   renderQuestion();

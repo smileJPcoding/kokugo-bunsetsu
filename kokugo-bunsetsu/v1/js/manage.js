@@ -1,6 +1,6 @@
 import { levels } from "./data/levels.js";
 import { badges } from "./data/badges.js";
-import { loadProgress, saveProgress, resetProgress, getRankTitle } from "./state.js";
+import { loadProgress, saveProgress, resetProgress, getRankTitle, getStarCount } from "./state.js";
 
 const app = document.getElementById("app");
 let progress = loadProgress(levels);
@@ -17,7 +17,7 @@ function render() {
           <label>研究レベル <input type="number" id="researchLevel" value="${progress.researchLevel}"></label>
           <label>研究ポイント <input type="number" id="researchPoints" value="${Math.floor(progress.researchPoints)}"></label>
         </div>
-        <div class="manage-hint">称号（正解数から自動計算）：${getRankTitle(progress.totalCorrectCount)}</div>
+        <div class="manage-hint">称号（正解数と★の数から自動計算）：${getRankTitle(progress.totalCorrectCount, getStarCount(progress))}</div>
       </section>
 
       <section class="manage-section">
