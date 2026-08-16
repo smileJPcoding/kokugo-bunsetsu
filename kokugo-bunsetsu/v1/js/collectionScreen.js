@@ -33,7 +33,7 @@ export function renderCollection(container, { progress, onBack }) {
       }
       return `
         <div class="badge-card unlocked class-${b.objectClass.toLowerCase()}">
-          <img class="badge-card-illustration" src="${b.illustration}" alt="${b.name}">
+          <img class="badge-card-illustration${b.altIllustration ? " has-alt" : ""}" src="${b.illustration}" alt="${b.name}" data-illustration="${b.illustration}" data-alt-illustration="${b.altIllustration || ""}">
           <div class="badge-card-designation">${b.designation}</div>
           <div class="badge-card-class">オブジェクトクラス：${b.objectClass}</div>
           <div class="badge-card-name">${b.name}</div>
@@ -43,4 +43,11 @@ export function renderCollection(container, { progress, onBack }) {
       `;
     })
     .join("");
+
+  grid.querySelectorAll(".badge-card-illustration.has-alt").forEach((img) => {
+    img.addEventListener("click", () => {
+      const isAlt = img.src.endsWith(img.dataset.altIllustration);
+      img.src = isAlt ? img.dataset.illustration : img.dataset.altIllustration;
+    });
+  });
 }

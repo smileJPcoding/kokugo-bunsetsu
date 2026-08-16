@@ -41,6 +41,15 @@
   margin: 0 auto 10px;
 }
 
+.badge-card-illustration.has-alt {
+  cursor: pointer;
+  transition: transform 0.15s ease;
+}
+
+.badge-card-illustration.has-alt:active {
+  transform: scale(0.95);
+}
+
 .badge-card-designation {
   font-size: 0.9rem;
   font-weight: bold;
