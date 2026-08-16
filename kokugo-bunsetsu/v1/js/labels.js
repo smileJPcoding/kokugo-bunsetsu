@@ -15,5 +15,5 @@ export const LABEL_ICON = {
   subject: "img/badges/scp173.svg",
   modifier: "img/badges/scp914.svg",
   conjunction: "img/badges/scp035.svg",
-  independent: "img/badges/scp999.svg",
+  independent: "img/badges/scp999.png",
 };

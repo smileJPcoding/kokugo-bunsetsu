@@ -20,7 +20,7 @@ export const badges = [
     name: "くすぐりおばけ",
     objectClass: "Safe",
     threshold: 500,
-    illustration: "img/badges/scp999.svg",
+    illustration: "img/badges/scp999.png",
     procedure: "対象はオレンジ色のゼリー状の物体。危険性はなく、触れた人間に強い幸福感を与えるため、通常は職員の福利のために使用が許可されている。",
     description: "SCP財団の中でも数少ない、完全に無害で友好的な存在。触れるとひたすら幸せな気持ちになる。",
   },
