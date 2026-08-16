@@ -131,12 +131,14 @@
 }
 
 .level-grid {
-  display: grid;
-  grid-template-columns: repeat(4, 1fr);
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
   gap: 16px;
 }
 
 .level-card {
+  flex: 0 0 calc(25% - 12px);
   background: var(--surface);
   border-radius: 16px;
   box-shadow: var(--shadow);

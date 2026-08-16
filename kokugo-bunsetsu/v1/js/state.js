@@ -1,15 +1,20 @@
 import { badges } from "./data/badges.js";
+import { levels } from "./data/levels.js";
 
 const STORAGE_KEY = "kokugo-bunsetsu-progress";
 
 const MARK_RANK = { "〇": 1, "◎": 2, "★": 3 };
 
 const RP_GROWTH_RATE = 1.15; // 研究レベルが1上がるごとの倍率（クッキークリッカー的な増幅曲線）
-const STAR_GROWTH_RATE = 1.15; // ★を1個取るごとの倍率。研究レベルの外側で掛かるので、★8個（上限）でも×3.06止まりで暴走しない
+const STAR_GROWTH_RATE = 1.15; // ★を1個取るごとの倍率。研究レベルの外側で掛かるので緩やかに増える（レベル数が伸びても急には暴走しない）
+
+// 最上位階級（O5評議会）は「存在する全レベルに★を1個ずつ」を要求する。
+// レベル追加のたびにここを直さなくて済むよう、levels.length から動的に算出する。
+const MAX_STAR = levels.length;
 
 // 昇格には正解数だけでなく★の数も必要（周回してレベルを極めないと階級が頭打ちになる）
 const RANK_THRESHOLDS = [
-  { min: 7000, star: 8, title: "O5評議会" },
+  { min: 7000, star: MAX_STAR, title: "O5評議会" },
   { min: 3000, star: 5, title: "サイト管理者" },
   { min: 1000, star: 3, title: "上級研究員" },
   { min: 500, star: 1, title: "研究員" },
